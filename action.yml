@@ -1,0 +1,36 @@
+name: aws-ssm-update-association
+description:
+  'GitHub Action for updating AWS SSM State Manager association with new
+  parameters.'
+
+author: 'Mercury Technologies'
+
+branding:
+  icon: 'cloud'
+  color: 'yellow'
+
+inputs:
+  association-id:
+    description: 'The ID of the association you want to update.'
+    required: true
+  parameters:
+    description: 'The parameters you want to update for the association.'
+    required: false
+  wait-until-association-updated:
+    description: 'Wait until the association is updated.'
+    required: false
+    default: 'false'
+  max-wait-time:
+    description: 'The maximum time to wait for the association to be updated.'
+    required: false
+    default: '300'
+  log-failed-command-invocations:
+    description:
+      'Log the command invocations that failed for the association. If the
+      command target is targeting hundreds or thousands of instances, this can
+      be slow.'
+    required: false
+    default: 'false'
+runs:
+  using: node20
+  main: dist/index.js
