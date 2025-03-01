@@ -53,7 +53,6 @@ version of your NixOS image:
 - uses: MercuryTechnologies/aws-ssm-update-association-action@v0
   with:
     association-id: '${{ steps.terraform-output.outputs.association_id }}'
-    targets: '[{"Key":"tag:Role","Values":["prometheus"]}]'
     parameters: '{"installable":[toJSON(steps.build-nixos.outputs.store-path)]}'
     wait-until-association-updated: true
     max-wait-time: 600
