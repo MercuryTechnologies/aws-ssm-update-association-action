@@ -22,13 +22,13 @@ this NixCon talk:
 ## Usage
 
 This action is similar to
-https://github.com/MercuryTechnologies/aws-ssm-send-command-action, However
+<https://github.com/MercuryTechnologies/aws-ssm-send-command-action>, However
 unlike a single command, an association is continously applied. If new instances
 are launched, the association will send commands to the new instances as well.
 
 For example, you could create an association like this in Terraform, using the
 NixOS deploy document from
-https://github.com/MercuryTechnologies/terraform-aws-ssm-nixos-deploy-document:
+<https://github.com/MercuryTechnologies/terraform-aws-ssm-nixos-deploy-document>:
 
 ```hcl
 resource "aws_ssm_association" "prometheus" {
@@ -114,7 +114,7 @@ updating associations for instances in the production environment:
       "Effect": "Allow",
       "Action": "ssm:UpdateAssociation",
       "Resource": [
-        "arn:aws:ssm::*:association/*",
+        "arn:aws:ssm:*:*:association/*",
         "arn:aws:ec2:*:*:instance/*"
       ],
       "Condition": {
