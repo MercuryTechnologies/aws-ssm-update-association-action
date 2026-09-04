@@ -32,10 +32,17 @@ export const checkState = async (
   client: ssm.SSMClient,
   input: ssm.DescribeAssociationCommandInput
 ): Promise<WaiterResult> => {
-  const result = await client.send(new ssm.DescribeAssociationCommand(input))
-  const reason = result
-  const state = checkResult(result)
-  return { state, reason }
+  try {
+    const result = await client.send(new ssm.DescribeAssociationCommand(input))
+    return { state: checkResult(result), reason: result }
+  } catch (error) {
+    // SSM is eventually consistent: immediately after UpdateAssociation the
+    // new version may not be readable yet. Keep polling until it appears.
+    if (error instanceof ssm.InvalidAssociationVersion) {
+      return { state: WaiterState.RETRY, reason: error }
+    }
+    throw error
+  }
 }
 
 /**
