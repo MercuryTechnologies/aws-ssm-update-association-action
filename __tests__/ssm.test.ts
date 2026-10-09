@@ -77,6 +77,30 @@ describe('checkState', () => {
     expect(checkResultSpy).toHaveBeenCalledWith(output)
     expect(result).toEqual({ state: WaiterState.RETRY, reason: output })
   })
+
+  it('returns RETRY for InvalidAssociationVersion', async () => {
+    const ssmMock = mockClient(ssm.SSMClient)
+    const error = new ssm.InvalidAssociationVersion({
+      message: 'Association version does not exist',
+      $metadata: {}
+    })
+    ssmMock.on(ssm.DescribeAssociationCommand).rejects(error)
+    const client = new ssm.SSMClient({})
+
+    await expect(checkState(client, {})).resolves.toEqual({
+      state: WaiterState.RETRY,
+      reason: error
+    })
+  })
+
+  it('rethrows other errors', async () => {
+    const ssmMock = mockClient(ssm.SSMClient)
+    const error = new Error('boom')
+    ssmMock.on(ssm.DescribeAssociationCommand).rejects(error)
+    const client = new ssm.SSMClient({})
+
+    await expect(checkState(client, {})).rejects.toBe(error)
+  })
 })
 
 describe('waitUntilAssociationUpdated', () => {

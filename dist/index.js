@@ -58914,10 +58914,18 @@ const checkResult = (result) => {
 };
 exports.checkResult = checkResult;
 const checkState = async (client, input) => {
-    const result = await client.send(new ssm.DescribeAssociationCommand(input));
-    const reason = result;
-    const state = (0, exports.checkResult)(result);
-    return { state, reason };
+    try {
+        const result = await client.send(new ssm.DescribeAssociationCommand(input));
+        return { state: (0, exports.checkResult)(result), reason: result };
+    }
+    catch (error) {
+        // SSM is eventually consistent: immediately after UpdateAssociation the
+        // new version may not be readable yet. Keep polling until it appears.
+        if (error instanceof ssm.InvalidAssociationVersion) {
+            return { state: util_waiter_1.WaiterState.RETRY, reason: error };
+        }
+        throw error;
+    }
 };
 exports.checkState = checkState;
 /**
